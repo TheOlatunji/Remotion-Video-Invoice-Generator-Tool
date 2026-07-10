@@ -22,6 +22,24 @@ import {
   CURRENCY_SWITCH_DURATION,
   CurrencySwitch,
 } from "./scenes/05-currency-switch/CurrencySwitch";
+import {
+  VAT_TOGGLE_DURATION,
+  VatToggle,
+} from "./scenes/06-vat-toggle/VatToggle";
+import {
+  BRAND_COLOR_REVEAL_DURATION,
+  BrandColorReveal,
+} from "./scenes/07-brand-color-reveal/BrandColorReveal";
+import { PDF_READY_DURATION, PdfReady } from "./scenes/08-pdf-ready/PdfReady";
+import {
+  INVOICE_HISTORY_DURATION,
+  InvoiceHistory,
+} from "./scenes/09-invoice-history/InvoiceHistory";
+import {
+  TYPOGRAPHY_CLOSE_DURATION,
+  TypographyClose,
+} from "./scenes/10-typography-close/TypographyClose";
+import { CLOSING_CTA_DURATION, ClosingCta } from "./scenes/11-closing-cta/ClosingCta";
 
 // Scenes are appended here one at a time, each approved before the next
 // is added. The film's total duration is simply the sum of its scenes.
@@ -30,8 +48,14 @@ const SCENE_2_START = SCENE_1_START + LOGO_REVEAL_DURATION;
 const SCENE_3_START = SCENE_2_START + INVOICE_CLUTTER_DURATION;
 const SCENE_4_START = SCENE_3_START + INVOICE_REVEAL_DURATION;
 const SCENE_5_START = SCENE_4_START + PROFILE_SYNC_DURATION;
+const SCENE_6_START = SCENE_5_START + CURRENCY_SWITCH_DURATION;
+const SCENE_7_START = SCENE_6_START + VAT_TOGGLE_DURATION;
+const SCENE_8_START = SCENE_7_START + BRAND_COLOR_REVEAL_DURATION;
+const SCENE_9_START = SCENE_8_START + PDF_READY_DURATION;
+const SCENE_10_START = SCENE_9_START + INVOICE_HISTORY_DURATION;
+const SCENE_11_START = SCENE_10_START + TYPOGRAPHY_CLOSE_DURATION;
 
-export const FILM_DURATION = SCENE_5_START + CURRENCY_SWITCH_DURATION;
+export const FILM_DURATION = SCENE_11_START + CLOSING_CTA_DURATION;
 
 // score.mp3 has ~1.65s of near-silence before its first audible note
 // (confirmed via `ffmpeg -af silencedetect`, threshold from loudnorm:
@@ -62,6 +86,30 @@ export const MyComposition: React.FC = () => {
 
       <Sequence from={SCENE_5_START} durationInFrames={CURRENCY_SWITCH_DURATION}>
         <CurrencySwitch />
+      </Sequence>
+
+      <Sequence from={SCENE_6_START} durationInFrames={VAT_TOGGLE_DURATION}>
+        <VatToggle />
+      </Sequence>
+
+      <Sequence from={SCENE_7_START} durationInFrames={BRAND_COLOR_REVEAL_DURATION}>
+        <BrandColorReveal />
+      </Sequence>
+
+      <Sequence from={SCENE_8_START} durationInFrames={PDF_READY_DURATION}>
+        <PdfReady />
+      </Sequence>
+
+      <Sequence from={SCENE_9_START} durationInFrames={INVOICE_HISTORY_DURATION}>
+        <InvoiceHistory />
+      </Sequence>
+
+      <Sequence from={SCENE_10_START} durationInFrames={TYPOGRAPHY_CLOSE_DURATION}>
+        <TypographyClose />
+      </Sequence>
+
+      <Sequence from={SCENE_11_START} durationInFrames={CLOSING_CTA_DURATION}>
+        <ClosingCta />
       </Sequence>
 
       {/*

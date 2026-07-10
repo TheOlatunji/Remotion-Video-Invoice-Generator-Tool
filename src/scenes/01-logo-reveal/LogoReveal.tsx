@@ -1,12 +1,7 @@
 import React from "react";
-import {
-  AbsoluteFill,
-  Img,
-  interpolate,
-  staticFile,
-  useCurrentFrame,
-} from "remotion";
-import { colors, easeOut, fonts } from "../../theme";
+import { AbsoluteFill, Img, staticFile, useCurrentFrame } from "remotion";
+import { colors, fonts } from "../../theme";
+import { revealStyle } from "../../utils/blurReveal";
 
 export const LOGO_REVEAL_DURATION = 150;
 
@@ -23,27 +18,6 @@ const WORDMARK_REVEAL_END = 135;
 // Music cue: the first piano note enters here, exactly as the mark
 // starts to resolve out of the dark.
 export const PIANO_CUE_FRAME = ICON_REVEAL_START;
-
-const REVEAL_BLUR_PX = 22;
-
-const revealStyle = (
-  frame: number,
-  start: number,
-  end: number,
-): React.CSSProperties => {
-  const progress = interpolate(frame, [start, end], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: easeOut,
-  });
-
-  const blur = interpolate(progress, [0, 1], [REVEAL_BLUR_PX, 0]);
-
-  return {
-    opacity: progress,
-    filter: `blur(${blur}px)`,
-  };
-};
 
 export const LogoReveal: React.FC = () => {
   const frame = useCurrentFrame();
