@@ -1,17 +1,18 @@
 import "./index.css";
+import "./load-fonts";
 import { Composition } from "remotion";
-import { MyComposition } from "./Composition";
+import { FILM_DURATION, MyComposition } from "./Composition";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Composition
-        id="MyComp"
+        id="StrynderFilm"
         component={MyComposition}
-        durationInFrames={60}
+        durationInFrames={FILM_DURATION}
         fps={30}
-        width={1280}
-        height={720}
+        width={1920}
+        height={1080}
       />
     </>
   );
