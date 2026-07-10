@@ -13,21 +13,33 @@ import {
 } from "../../components/InvoiceOutline";
 import { colors, easeInOut, easeOut } from "../../theme";
 
-export const INVOICE_CLUTTER_DURATION = 330; // 11s @ 30fps
+export const INVOICE_CLUTTER_DURATION = 150; // 5s @ 30fps
 
 // "Whether you're a freelancer, a creative, a growing business, or a solo
 // founder, your time is better spent serving clients, building products,
 // and growing your business — not recreating invoices from scratch."
 
-const SCATTERED_COUNT = 28;
-const FADE_IN_DURATION = 12;
+const SCATTERED_COUNT = 12;
+const FADE_IN_DURATION = 8;
 
-// All entrances (hero + scattered) resolve by this frame.
-const ENTRANCE_END = 230;
-// The cluttered screen is held, untouched, before it resolves.
-const HOLD_END = 258;
-// Everything but the hero dissolves toward center over the remaining time.
+// All entrances (hero + scattered) resolve by this frame — comfortably
+// inside the first 2 seconds (60 frames), so the "repetitive admin"
+// idea reads immediately.
+const ENTRANCE_END = 50;
+// The cluttered screen is held only briefly before it resolves — the
+// merge, not the clutter, is this scene's visual highlight.
+const HOLD_END = 58;
+// Everything but the hero dissolves toward center over the remaining
+// (majority of the) scene.
 const DISSOLVE_END = INVOICE_CLUTTER_DURATION;
+
+// Farther invoices begin converging slightly earlier than nearer ones,
+// so despite starting at different times they all arrive at the center
+// together — one continuous, intentional gesture instead of a single
+// synchronized snap.
+const MERGE_STAGGER_SPAN = 20;
+const MIN_RADIUS = 120;
+const MAX_RADIUS = 420;
 
 const CENTER_X = 1920 / 2;
 const CENTER_Y = 1080 / 2;
@@ -38,6 +50,7 @@ type Layout = {
   rotation: number;
   scale: number;
   startFrame: number;
+  mergeStart: number;
 };
 
 // Deterministic scatter + accelerating stagger, computed once at module
@@ -45,7 +58,7 @@ type Layout = {
 const layouts: Layout[] = Array.from({ length: SCATTERED_COUNT }, (_, i) => {
   const seed = `invoice-${i}`;
   const angle = random(`${seed}-angle`) * Math.PI * 2;
-  const radius = 160 + random(`${seed}-radius`) * 520;
+  const radius = MIN_RADIUS + random(`${seed}-radius`) * (MAX_RADIUS - MIN_RADIUS);
   const offsetX = Math.cos(angle) * radius;
   const offsetY = Math.sin(angle) * radius * 0.55;
   const rotation = (random(`${seed}-rotation`) - 0.5) * 14;
@@ -58,7 +71,10 @@ const layouts: Layout[] = Array.from({ length: SCATTERED_COUNT }, (_, i) => {
   const span = ENTRANCE_END - FADE_IN_DURATION;
   const startFrame = Math.round(eased * span);
 
-  return { offsetX, offsetY, rotation, scale, startFrame };
+  const normalizedRadius = (radius - MIN_RADIUS) / (MAX_RADIUS - MIN_RADIUS);
+  const mergeStart = Math.round(HOLD_END + (1 - normalizedRadius) * MERGE_STAGGER_SPAN);
+
+  return { offsetX, offsetY, rotation, scale, startFrame, mergeStart };
 });
 
 export const InvoiceClutter: React.FC = () => {
@@ -93,11 +109,12 @@ export const InvoiceClutter: React.FC = () => {
           { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: easeOut },
         );
 
-        const dissolve = interpolate(frame, [HOLD_END, DISSOLVE_END], [0, 1], {
-          extrapolateLeft: "clamp",
-          extrapolateRight: "clamp",
-          easing: easeInOut,
-        });
+        const dissolve = interpolate(
+          frame,
+          [layout.mergeStart, DISSOLVE_END],
+          [0, 1],
+          { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: easeInOut },
+        );
 
         const opacity = fadeIn * (1 - dissolve);
         const x = interpolate(dissolve, [0, 1], [layout.offsetX, 0]);
